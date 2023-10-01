@@ -12,6 +12,10 @@ if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
 }
 
+// Initialize variables for alert message and redirection URL
+$alertMessage = "";
+$redirectUrl = "../index.html"; // Change this to the desired URL
+
 // Handle form submissions for adding or updating items
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
@@ -26,17 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // If a matching item exists, update it
         $update_sql = "UPDATE dispatch_central SET count = '$count' WHERE name = '$name' AND best_before_date = '$best_before_date'";
         if ($conn->query($update_sql) === TRUE) {
-            echo "Item updated successfully!";
+            $alertMessage = "Item updated successfully!";
         } else {
-            echo "Error updating item: " . $conn->error;
+            $alertMessage = "Error updating item: " . $conn->error;
         }
     } else {
         // If no matching item exists, insert a new one
         $insert_sql = "INSERT INTO dispatch_central (name, count, best_before_date) VALUES ('$name', '$count', '$best_before_date')";
         if ($conn->query($insert_sql) === TRUE) {
-            echo "Item added successfully!";
+            $alertMessage = "Item added successfully!";
         } else {
-            echo "Error adding item: " . $conn->error;
+            $alertMessage = "Error adding item: " . $conn->error;
         }
     }
 }
@@ -75,3 +79,12 @@ if ($result->num_rows > 0) {
     <input type="date" name="best_before_date"><br>
     <input type="submit" name="submit" value="Submit">
 </form>
+
+
+<script>
+    var alertMessage = "<?php echo $alertMessage; ?>";
+    if (alertMessage !== "") {
+        alert(alertMessage);
+        window.location.href = "<?php echo $redirectUrl; ?>";
+    }
+</script>
