@@ -1,0 +1,4 @@
+to run it, you need to download XAMPP to run the PHP (this is the easiesy way)
+and enable Apache and MySQL after that
+
+database username & password is admin/admin
