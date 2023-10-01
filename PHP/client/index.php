@@ -21,5 +21,7 @@
 
         <input type="submit" name="submit" value="Submit Appointment">
     </form>
+    
+    <a href="../index.html">Return to Main Page</a>
 </body>
 </html>

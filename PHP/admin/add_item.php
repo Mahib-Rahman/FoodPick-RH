@@ -80,6 +80,7 @@ if ($result->num_rows > 0) {
     <input type="submit" name="submit" value="Submit">
 </form>
 
+<a href="<?php echo $redirectUrl; ?>">Return to Main Page</a>
 
 <script>
     var alertMessage = "<?php echo $alertMessage; ?>";
