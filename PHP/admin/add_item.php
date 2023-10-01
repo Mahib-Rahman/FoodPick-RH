@@ -1,8 +1,8 @@
 <?php
 // Database connection settings
-$dbHost = 'localhost';
-$dbUser = 'admin';
-$dbPass = 'admin';
+$dbHost = '143.110.221.216';
+$dbUser = 'foodbank';
+$dbPass = 'Team2Bank';
 $dbName = 'foodbank';
 
 // Create a database connection
