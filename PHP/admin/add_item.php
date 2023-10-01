@@ -12,17 +12,32 @@ if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
 }
 
-// Handle form submissions for adding new items
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item'])) {
+// Handle form submissions for adding or updating items
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
-    $size = $_POST['size'];
+    $count = (int)$_POST['count'];
     $best_before_date = $_POST['best_before_date'];
 
-    $sql = "INSERT INTO dispatch_central (name, size, best_before_date) VALUES ('$name', '$size', '$best_before_date')";
-    if ($conn->query($sql) === TRUE) {
-        echo "Item added successfully!";
+    // Check if an item with the same name and best before date already exists
+    $check_sql = "SELECT * FROM dispatch_central WHERE name = '$name' AND best_before_date = '$best_before_date'";
+    $check_result = $conn->query($check_sql);
+
+    if ($check_result->num_rows > 0) {
+        // If a matching item exists, update it
+        $update_sql = "UPDATE dispatch_central SET count = '$count' WHERE name = '$name' AND best_before_date = '$best_before_date'";
+        if ($conn->query($update_sql) === TRUE) {
+            echo "Item updated successfully!";
+        } else {
+            echo "Error updating item: " . $conn->error;
+        }
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        // If no matching item exists, insert a new one
+        $insert_sql = "INSERT INTO dispatch_central (name, count, best_before_date) VALUES ('$name', '$count', '$best_before_date')";
+        if ($conn->query($insert_sql) === TRUE) {
+            echo "Item added successfully!";
+        } else {
+            echo "Error adding item: " . $conn->error;
+        }
     }
 }
 
@@ -33,12 +48,12 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     echo "<h2>Dispatch Central Items</h2>";
     echo "<table border='1'>";
-    echo "<tr><th>Name</th><th>Size</th><th>Best Before Date</th></tr>";
+    echo "<tr><th>Name</th><th>Count</th><th>Best Before Date</th></tr>";
 
     while ($row = $result->fetch_assoc()) {
         echo "<tr>";
         echo "<td>" . $row['name'] . "</td>";
-        echo "<td>" . $row['size'] . "</td>";
+        echo "<td>" . $row['count'] . "</td>";
         echo "<td>" . $row['best_before_date'] . "</td>";
         echo "</tr>";
     }
@@ -49,14 +64,14 @@ if ($result->num_rows > 0) {
 }
 ?>
 
-<!-- HTML form for adding items -->
-<h2>Add New Item</h2>
+<!-- HTML form for adding or updating items -->
+<h2>Add or Update Item</h2>
 <form method="POST" action="">
     <label for="name">Name:</label>
     <input type="text" name="name" required><br>
-    <label for="size">Size:</label>
-    <input type="text" name="size"><br>
+    <label for="count">Count:</label>
+    <input type="number" name="count" required step="1"><br>
     <label for="best_before_date">Best Before Date:</label>
     <input type="date" name="best_before_date"><br>
-    <input type="submit" name="add_item" value="Add Item">
+    <input type="submit" name="submit" value="Submit">
 </form>
